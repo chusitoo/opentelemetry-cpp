@@ -3,7 +3,7 @@ name: cppcheck
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, cppcheck_ci ]
   pull_request:
     branches: [ main ]
 
@@ -56,7 +56,9 @@ jobs:
       - name: Count warnings
         run: |
           set +e
-          COUNT=`grep -c -E "\[.+\]" cppcheck.log`
-          echo "cppcheck reported ${COUNT} warning(s)"
-          # TODO: uncomment to enforce failing the build
-          # if [ $COUNT -ne 0 ] ; then exit 1 ; fi
+          export WARNING_COUNT=`grep -c -E "\[.+\]" cppcheck.log`
+          echo "cppcheck reported ${WARNING_COUNT} warning(s)"
+          # Acceptable limit, to decrease over time down to 0
+          export WARNING_LIMIT=10
+          # FAIL the build if WARNING_COUNT > WARNING_LIMIT
+          exit $(( WARNING_COUNT > WARNING_LIMIT ? 1 : 0 ))
