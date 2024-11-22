@@ -56,9 +56,11 @@ jobs:
       - name: Count warnings
         run: |
           set +e
-          export WARNING_COUNT=`grep -c -E "\[.+\]" cppcheck.log`
-          echo "cppcheck reported ${WARNING_COUNT} warning(s)"
+          readonly WARNING_COUNT=`grep -c -E "\[.+\]" cppcheck.log`
           # Acceptable limit, to decrease over time down to 0
-          export WARNING_LIMIT=10
+          readonly WARNING_LIMIT=10
           # FAIL the build if WARNING_COUNT > WARNING_LIMIT
-          exit $(( WARNING_COUNT > WARNING_LIMIT ? 1 : 0 ))
+          if [ $WARNING_COUNT -lt $WARNING_LIMIT ] ; then
+            echo "::workflow-command ::{cppcheck reported ${WARNING_COUNT} warning(s)}"
+            exit 1
+          fi
