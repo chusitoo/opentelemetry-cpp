@@ -61,6 +61,7 @@ jobs:
           readonly WARNING_LIMIT=10
           # FAIL the build if WARNING_COUNT > WARNING_LIMIT
           if [ $WARNING_COUNT -lt $WARNING_LIMIT ] ; then
-            echo "::workflow-command ::{cppcheck reported ${WARNING_COUNT} warning(s)}"
             exit 1
+          elif [ $WARNING_COUNT -gt 0 ] ; then
+            echo "::warning::cppcheck reported ${WARNING_COUNT} warning(s)"
           fi
